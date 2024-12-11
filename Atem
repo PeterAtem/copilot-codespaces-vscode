@@ -1,0 +1,71 @@
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Ball and goal settings
+let ball = { x: 400, y: 350, radius: 10, dx: 0, dy: 0 };
+let goal = { x: 300, y: 0, width: 200, height: 50 };
+
+// Draw goal
+function drawGoal() {
+    ctx.fillStyle = "white";
+    ctx.fillRect(goal.x, goal.y, goal.width, goal.height);
+}
+
+// Draw ball
+function drawBall() {
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+    ctx.fillStyle = "white";
+    ctx.fill();
+    ctx.closePath();
+}
+
+// Shoot ball
+function shootBall(event) {
+    ball.dx = (event.clientX - canvas.offsetLeft - ball.x) / 20;
+    ball.dy = (event.clientY - canvas.offsetTop - ball.y) / 20;
+}
+
+// Update ball position
+function updateBall() {
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    // Check if the ball is in the goal
+    if (
+        ball.x > goal.x &&
+        ball.x < goal.x + goal.width &&
+        ball.y - ball.radius < goal.y + goal.height
+    ) {
+        alert("GOAL!");
+        resetBall();
+    }
+
+    // Reset if ball moves out of bounds
+    if (ball.y < 0 || ball.x < 0 || ball.x > canvas.width) {
+        resetBall();
+    }
+}
+
+// Reset ball
+function resetBall() {
+    ball.x = 400;
+    ball.y = 350;
+    ball.dx = 0;
+    ball.dy = 0;
+}
+
+// Game loop
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGoal();
+    drawBall();
+    updateBall();
+    requestAnimationFrame(gameLoop);
+}
+
+// Event listener
+canvas.addEventListener("click", shootBall);
+
+// Start game
+gameLoop();
